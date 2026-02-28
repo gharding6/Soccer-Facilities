@@ -6,6 +6,7 @@ in the Baltimore/Timonium MD area.
 
 import base64
 import io
+from typing import Optional
 
 import dash
 import dash_bootstrap_components as dbc
@@ -244,7 +245,7 @@ def build_size_scale(sqft_series: pd.Series, min_px: int = 8, max_px: int = 28) 
     ]
 
 
-def build_map(df: pd.DataFrame, selected_idx: int | None = None) -> go.Figure:
+def build_map(df: pd.DataFrame, selected_idx: Optional[int] = None) -> go.Figure:
     """Build the Plotly Scattermapbox figure."""
     if df.empty:
         fig = go.Figure()
@@ -509,7 +510,7 @@ def _score_col(label: str, component_id: str, value: int) -> dbc.Col:
     )
 
 
-def build_table(df: pd.DataFrame, selected_idx: int | None = None) -> tuple:
+def build_table(df: pd.DataFrame, selected_idx: Optional[int] = None) -> tuple:
     """Return (columns, data, style_data_conditional) for the DataTable."""
     display_cols = [
         "name", "city", "status", "lease_type",
@@ -948,25 +949,6 @@ def update_detail(selected_idx, init_scores, ceiling, parking, access, cost,
         scores = init_scores
 
     return detail_card(row, scores)
-
-
-# Radar-only update via sliders (handled inside update_detail above)
-@app.callback(
-    Output("radar-chart", "figure"),
-    Input("score-ceiling", "value"),
-    Input("score-parking", "value"),
-    Input("score-access", "value"),
-    Input("score-cost", "value"),
-    prevent_initial_call=True,
-)
-def update_radar_only(ceiling, parking, access, cost):
-    scores = {
-        "Ceiling": ceiling or 3,
-        "Parking": parking or 3,
-        "Accessibility": access or 3,
-        "Cost": cost or 3,
-    }
-    return build_radar(scores)
 
 
 # ---------------------------------------------------------------------------
